@@ -1,0 +1,5 @@
+*
+!*.rs
+!*.js
+!*.input
+!.gitignore
