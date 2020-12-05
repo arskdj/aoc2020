@@ -8,21 +8,12 @@ fs.readFile("../input/day3.input", "utf-8", (err, data) => {
 });
 
 function part1(input, incX, incY) {
-    let [x, y] = [0, 0];
-    let trees = 0;
-    let width = input[0].length;
-
-    while (y < input.length) {
-        let ch = input[y][x];
-        if (ch === "#") {
-            trees++;
-        }
-
-        x = (x + incX) % width;
-        y = y + incY;
-    }
-
-    return trees;
+    return input
+        .filter((_, i) => i % incY === 0)
+        .filter((row, y) => {
+            const x = (incX * y) % row.length;
+            return row[x] === "#";
+        }).length;
 }
 
 function part2(input) {
@@ -34,11 +25,8 @@ function part2(input) {
         [1, 2],
     ];
 
-    let result = 1;
-
-    for ([incX, incY] of slopes) {
-        result *= part1(input, incX, incY);
-    }
-
-    return result;
+    return slopes.reduce(
+        (result, [incX, incY]) => result * part1(input, incX, incY),
+        1
+    );
 }
