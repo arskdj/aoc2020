@@ -4,8 +4,8 @@ fs.readFile("../input/day3.input", "utf-8", (err, data) => {
     const input = data.trim().split("\n");
 
     console.log(part1(input, 3, 1));
+    console.log(part2(input));
 });
-debugger;
 
 function part1(input, incX, incY) {
     let [x, y] = [0, 0];
@@ -22,6 +22,23 @@ function part1(input, incX, incY) {
         y = y + incY;
     }
 
-    debugger;
     return trees;
+}
+
+function part2(input) {
+    const slopes = [
+        [1, 1],
+        [3, 1],
+        [5, 1],
+        [7, 1],
+        [1, 2],
+    ];
+
+    let result = 1;
+
+    for ([incX, incY] of slopes) {
+        result *= part1(input, incX, incY);
+    }
+
+    return result;
 }
