@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-fs.readFile("../input/day3.input", "utf-8", (err, data) => {
+fs.readFile("../input/day3.input", "utf-8", (_, data) => {
     const input = data.trim().split("\n");
 
     console.log(part1(input, 3, 1));
