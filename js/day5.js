@@ -5,6 +5,7 @@ fs.readFile("../input/day5.input", "utf8", (_, data) => {
     console.log(part1(input));
     console.log(part2(input));
     //console.log(getSeatID("FBFBBFFRLR"));
+    // 963 592
 });
 
 function part1(input) {
@@ -12,29 +13,10 @@ function part1(input) {
 }
 
 function getSeatID(code) {
-    const initialRange = {
-        minRow: 0,
-        maxRow: 127,
-        minCol: 0,
-        maxCol: 7,
-    };
-
-    const reduced = [...code].reduce((id, dir) => {
-        if (dir === "F")
-            return { ...id, maxRow: id.maxRow - half(id.minRow, id.maxRow) };
-        if (dir === "B")
-            return { ...id, minRow: id.minRow + half(id.minRow, id.maxRow) };
-        if (dir === "L")
-            return { ...id, maxCol: id.maxCol - half(id.minCol, id.maxCol) };
-        if (dir === "R")
-            return { ...id, minCol: id.minCol + half(id.minCol, id.maxCol) };
-    }, initialRange);
-
-    return reduced.minRow * 8 + reduced.minCol;
-}
-
-function half(min, max) {
-    return (max - min + 1) / 2;
+    return [...code].reduce(
+        (id, dir) => (id << 1) | (dir === "B" || dir === "R"),
+        0
+    );
 }
 
 function part2(input) {
