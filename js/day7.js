@@ -4,47 +4,48 @@ const input = fs
     .readFileSync("../input/day7.input", "utf8")
     .trim()
     .split("\n")
-    .flatMap(parseEdges);
+    .reduce((map, row) => {
+        [key, value] = parseRow(row);
+        map[key] = value;
+        return map;
+    }, {});
 
 console.log(part1());
 console.log(part2());
 
-function parseEdges(row) {
+function parseRow(row) {
     const regex = /(\d+ )?([a-z]+ [a-z]+) bag/g;
     const matches = [...row.matchAll(regex)];
-    const [, , from] = matches.shift();
-    return matches.map(
-        ([, weight, to]) => new Object({ from, to, weight: +weight })
-    );
+    const [, , key] = matches.shift();
+
+    bagDict = matches.reduce((bags, [, n, bag]) => {
+        bags[bag] = isNaN(+n) ? 0 : +n;
+        return bags;
+    }, {});
+
+    return [key, bagDict];
 }
 
 function part1() {
-    return new Set(
-        input.filter(edge => contains(edge, "shiny gold")).map(e => e.from)
-    ).size;
+    return Object.keys(input).filter(b => contains(b, "shiny gold")).length;
 }
 
-function contains(edge, bagColor) {
-    if (edge.to === bagColor) return true;
-    if (isNaN(edge.weight)) return false;
-
-    return input
-        .filter(e => e.from === edge.to)
-        .some(e => contains(e, bagColor));
+function contains(bagKey, x) {
+    bag = input[bagKey];
+    if (bag.hasOwnProperty(x)) return true;
+    if (bag.hasOwnProperty("no other")) return false;
+    return Object.keys(bag).some(bag => contains(bag, x));
 }
 
 function part2() {
     return countBagsIn("shiny gold");
 }
 
-function countBagsIn(bagName) {
-    const bags = input.filter(e => e.from === bagName);
-    const isEmptyBag = bags.length === 1 && isNaN(bags[0].weight);
-
-    if (isEmptyBag) return 0;
-
-    return bags.reduce(
-        (sum, edge) => sum + edge.weight * (1 + countBagsIn(edge.to)),
+function countBagsIn(bagKey) {
+    const bags = input[bagKey];
+    if (bags.hasOwnProperty("no other")) return 0;
+    return Object.entries(bags).reduce(
+        (sum, [bag, n]) => sum + n * (1 + countBagsIn(bag)),
         0
     );
 }
