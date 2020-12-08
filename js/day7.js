@@ -41,8 +41,8 @@ function part2() {
     return countBagsIn("shiny gold");
 }
 
-function countBagsIn(bagKey) {
-    const bags = input[bagKey];
+function countBagsIn(bag) {
+    const bags = input[bag];
     if (bags.hasOwnProperty("no other")) return 0;
     return Object.entries(bags).reduce(
         (sum, [bag, n]) => sum + n * (1 + countBagsIn(bag)),
