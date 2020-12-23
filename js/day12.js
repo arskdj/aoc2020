@@ -13,37 +13,80 @@ const dirs = ["E", "S", "W", "N"];
 function part1() {
     let position = { x: 0, y: 0, dir: "E" };
     input.forEach(cmd => move(cmd, position));
-    return Math.abs(position.x) + Math.abs(position.y);
+    return manhattan(position.x, position.y);
 }
 
 function move(cmd, position) {
     const go = {
-        N: () => (position.y -= cmd.value),
-        S: () => (position.y += cmd.value),
+        N: () => (position.y += cmd.value),
         E: () => (position.x += cmd.value),
+        S: () => (position.y -= cmd.value),
         W: () => (position.x -= cmd.value),
-        R: () => (position.dir = rotate(cmd, position)),
-        L: () => go.R(),
+        R: () => rotate(cmd.value, position),
+        L: () => rotate(-cmd.value, position),
         F: () => go[position.dir](),
     };
 
     go[cmd.dir]();
-    console.log(position);
+}
+
+function rotate(degrees, position) {
+    const index = modulo(
+        dirs.findIndex(x => x === position.dir) + degrees / 90,
+        dirs.length
+    );
+    position.dir = dirs[index];
 }
 
 function modulo(x, n) {
     return ((x % n) + n) % n;
 }
 
-function rotate(cmd, position) {
-    let degrees = cmd.value / 90;
-    if (cmd.dir === "L") degrees = -degrees;
-    const index = modulo(
-        dirs.findIndex(x => x === position.dir) + degrees,
-        dirs.length
-    );
-    return dirs[index];
+function manhattan(a, b) {
+    return Math.abs(a) + Math.abs(b);
 }
 
-//console.log(input);
+function part2() {
+    let waypoint = { x: 10, y: 1 };
+    let ship = { x: 0, y: 0 };
+
+    input.forEach(cmd => move2(cmd, ship, waypoint));
+
+    return manhattan(ship.x, ship.y);
+}
+
+function move2(cmd, ship, waypoint) {
+    const go = {
+        N: () => (waypoint.y += cmd.value),
+        E: () => (waypoint.x += cmd.value),
+        S: () => (waypoint.y -= cmd.value),
+        W: () => (waypoint.x -= cmd.value),
+        R: () => rotateWaypointR(cmd.value, waypoint),
+        L: () => rotateWaypointL(cmd.value, waypoint),
+        F: () => {
+            ship.x += cmd.value * waypoint.x;
+            ship.y += cmd.value * waypoint.y;
+        },
+    };
+
+    go[cmd.dir]();
+}
+
+function rotateWaypointR(degrees, waypoint) {
+    for (i = 0; i < degrees / 90; i++) {
+        const { x, y } = waypoint;
+        waypoint.x = y;
+        waypoint.y = -x;
+    }
+}
+
+function rotateWaypointL(degrees, waypoint) {
+    for (i = 0; i < degrees / 90; i++) {
+        const { x, y } = waypoint;
+        waypoint.x = -y;
+        waypoint.y = x;
+    }
+}
+
 console.log(part1());
+console.log(part2());
